@@ -1,4 +1,4 @@
-# CentralBank-Spring-Boot--Spring-Security--JWTS
+# CentralBank-Spring-Boot--Spring-Security--JWT
 
 ## Context of the project
 For an urgent need, the central bank of Morocco will implement a service named "Bank Connect" to simplify and automate the banking system to Moroccans. This web application will allow to create an account for new customers, the latter is required to send a copy of CIN scanned via the registration form in addition to providing his name, address, email address and phone number to be confirmed by sms containing a 5-digit code valid for 3 minutes
