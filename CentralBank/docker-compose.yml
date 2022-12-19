@@ -1,0 +1,9 @@
+services:
+  bankDB:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bank
+    volumes:
+      -
