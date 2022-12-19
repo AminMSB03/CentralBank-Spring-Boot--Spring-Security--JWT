@@ -32,5 +32,3 @@ Create the appropriate class diagram Develop a Rest API using Spring Boot that r
 Secure your API using Spring Security and JWT
 
 Store your information in a PostgreSQL database
-
-Translated with www.DeepL.com/Translator (free version)
