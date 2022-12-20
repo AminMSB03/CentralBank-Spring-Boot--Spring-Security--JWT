@@ -25,6 +25,7 @@ public class UserController {
     @GetMapping(path = "/users")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> appUsers(){
+        System.out.println("irhzhuz");
         return userService.listUsers();
     }
 

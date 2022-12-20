@@ -19,12 +19,15 @@ public class User {
     private String lastName;
     private String address;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false)
     private String password;
+    @Column(unique = true,nullable = false)
     private String email;
-    private String phoneNumber;
+    private Long phoneNumber;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",fetch = FetchType.EAGER)
     private List<BankAccount> bankAccounts;
 
 }

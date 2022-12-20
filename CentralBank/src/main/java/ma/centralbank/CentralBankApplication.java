@@ -23,13 +23,12 @@ public class CentralBankApplication {
 
 
 
-            /*
+
                 @Bean
                 CommandLineRunner commandLineRunner(UserService userService){
                     return args -> {
-                        userService.addNewUser(new User(null,"User1","user","casablanca","user123","user@gmail.com","0630155355","CLIENT",null));
+                        userService.addNewUser(new User(null,"Agent","Agent","casablanca","agent123","agent@gmail.com",0630155355L,"AGENT",null));
                     };
                 }
-             */
 
 }
