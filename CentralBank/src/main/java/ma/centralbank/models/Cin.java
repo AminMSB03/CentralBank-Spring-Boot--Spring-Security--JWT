@@ -1,21 +1,24 @@
 package ma.centralbank.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity @Builder
 @AllArgsConstructor @NoArgsConstructor
 public class Cin {
 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
+    @OneToOne
+    private User user;
 
-    @Id
+
     public Long getId() {
         return id;
     }
@@ -32,5 +35,11 @@ public class Cin {
         this.name = name;
     }
 
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

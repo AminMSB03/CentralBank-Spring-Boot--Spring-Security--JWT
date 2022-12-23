@@ -1,9 +1,11 @@
 package ma.centralbank.security;
 
 import ma.centralbank.services.user.UserService;
+import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -14,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,19 +34,25 @@ public class SecurityConfig {
    private UserService userService;
    private PasswordEncoder passwordEncoder;
 
-   public SecurityConfig(UserService userService, PasswordEncoder passwordEncoder) {
+   private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+   public SecurityConfig(UserService userService, PasswordEncoder passwordEncoder, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
       this.userService = userService;
       this.passwordEncoder = passwordEncoder;
+      this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
    }
 
    @Bean
    UserDetailsService userDetailsService(){
       return email -> {
          ma.centralbank.models.User user = userService.loadUserByEmail(email);
+         if (user == null) {
+            throw new UsernameNotFoundException("No user found for "+ email + ".");
+         }
          GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
          List<GrantedAuthority> authorities = Collections.singletonList(authority);
-
          return new User(user.getEmail(), user.getPassword(),authorities);
+
       };
    }
 
@@ -51,22 +60,29 @@ public class SecurityConfig {
    @Bean
    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       http.csrf(csrf->csrf.disable());
+      //http.exceptionHandling()
+        //   .authenticationEntryPoint(this.customAuthenticationEntryPoint);
       http
+              .authorizeHttpRequests(aut->aut.requestMatchers("/addCin/**").permitAll())
               .authorizeHttpRequests(auth->auth.anyRequest().authenticated())
                .sessionManagement(sess->sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
               .httpBasic(Customizer.withDefaults());
-      http.addFilter(new JwtAuthenticationFilter(authenticationManager()));
+      http.addFilter(new JwtAuthenticationFilter(authenticationManager(this.authenticationProvider(this.userDetailsService()))));
       http.addFilterBefore(new JwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
       return http.build();
    }
 
    @Bean
-   public AuthenticationManager authenticationManager() throws Exception {
-      // create an authentication manager with a custom user details service
-      DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-      provider.setUserDetailsService(userDetailsService());
-      provider.setPasswordEncoder(this.passwordEncoder);
-      return new ProviderManager(Arrays.asList(provider));
+   public AuthenticationManager authenticationManager(AuthenticationProvider authenticationProvider) {
+      return new ProviderManager(Arrays.asList(authenticationProvider));
+   }
+
+   @Bean
+   public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+      DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+      authenticationProvider.setUserDetailsService(userDetailsService);
+      authenticationProvider.setPasswordEncoder(this.passwordEncoder);
+      return authenticationProvider;
    }
 
 }

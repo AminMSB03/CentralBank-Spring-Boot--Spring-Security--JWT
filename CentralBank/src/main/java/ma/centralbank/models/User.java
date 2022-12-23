@@ -1,16 +1,16 @@
 package ma.centralbank.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Entity(name = "_user")
-@Table(name="_user")
-@Data @NoArgsConstructor @AllArgsConstructor
+@Entity
+@Table(name="_user") @Builder
+@NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,8 +18,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String address;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @Column(unique = true,nullable = false)
     private String email;
@@ -27,7 +27,10 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role;
 
-    @OneToMany(mappedBy = "customer",fetch = FetchType.EAGER)
-    private List<BankAccount> bankAccounts;
+    @OneToOne(mappedBy = "user")
+    private Cin cin;
+
+    @OneToOne(mappedBy = "customer")
+    private BankAccount bankAccount;
 
 }
