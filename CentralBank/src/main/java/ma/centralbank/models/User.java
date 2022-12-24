@@ -1,5 +1,6 @@
 package ma.centralbank.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,6 @@ public class User {
     private Long phoneNumber;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role;
-
     @OneToMany(mappedBy = "customer",fetch = FetchType.EAGER)
     private List<BankAccount> bankAccounts;
 

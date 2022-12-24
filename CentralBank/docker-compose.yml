@@ -1,9 +1,16 @@
+version: "3.8"
+
 services:
-  bankDB:
-    image: postgres
+  db:
+    image: postgres:latest
     restart: always
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: bank
+      POSTGRES_USER: zakaria
+      POSTGRES_PASSWORD: random
+    ports:
+      - "5432:5432"
     volumes:
-      -
+      - my-db:/var/lib/postgresql/data
+
+volumes:
+  my-db:

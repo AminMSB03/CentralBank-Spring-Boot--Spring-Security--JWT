@@ -1,5 +1,8 @@
 package ma.centralbank.services.user;
 
+import ma.centralbank.models.AccountOperation;
+import ma.centralbank.models.BankAccount;
+import ma.centralbank.models.CardLimit;
 import ma.centralbank.models.User;
 
 import java.util.List;
@@ -12,4 +15,12 @@ public interface UserService {
 
     List<User> listUsers();
 
+    BankAccount addNewBankAccount(BankAccount bankAccount);
+    List<BankAccount> getAccountTypes();
+
+    AccountOperation userAccountOperations(AccountOperation accountOperation);
+
+    List<CardLimit> getCardLimits();
+
+    CardLimit AddNewCardLimits(CardLimit cardLimit);
 }
