@@ -18,9 +18,8 @@ public interface UserService {
     BankAccount addNewBankAccount(BankAccount bankAccount);
     List<BankAccount> getAccountTypes();
 
-    AccountOperation userAccountOperations(AccountOperation accountOperation);
-
-    List<CardLimit> getCardLimits();
-
     CardLimit AddNewCardLimits(CardLimit cardLimit);
+
+    User getAccountPhoneNumberByPhoneNumber(Long phoneNumber);
+
 }

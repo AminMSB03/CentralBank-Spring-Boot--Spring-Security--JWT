@@ -8,11 +8,13 @@ import ma.centralbank.ExecptionsHandler.ExecptionsData.LimitExecption;
 import ma.centralbank.ExecptionsHandler.ExecptionsData.OperationExecption;
 import ma.centralbank.dto.AccountOperationsDto;
 import ma.centralbank.dto.GetUserByEmailDto;
+import ma.centralbank.dto.OnlinePaymentsDto;
 import ma.centralbank.enums.OperationType;
 import ma.centralbank.models.AccountOperation;
 import ma.centralbank.models.BankAccount;
 import ma.centralbank.models.CardLimit;
 import ma.centralbank.models.User;
+import ma.centralbank.services.UserOperationsService.UserOperationsService;
 import ma.centralbank.services.user.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +33,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserOperationsService userOperationsService;
 
     private final AccountOperationsExecptions exceptionHandler;
 
@@ -63,85 +66,22 @@ public class UserController {
     @PostMapping("/Withdraw")
     @PreAuthorize("hasAuthority('AGENT')")
     public ResponseEntity<?> withdraw(@RequestBody AccountOperationsDto accountOperationsDto) {
-        User user = userService.loadUserByEmail(accountOperationsDto.getEmail());
-        for (BankAccount account : user.getBankAccounts()) {
-
-            for (CardLimit card : userService.getCardLimits()) {
-                if ((int) account.getBalance() != 0) {
-
-                    if (card.getCardType().equals(account.getAccountType())) {
-                        if (accountOperationsDto.getAmountWithdrawed() <= card.getLimitForDay()) {
-
-                            double userCurrentBalance = account.getBalance() - accountOperationsDto.getAmountWithdrawed();
-                            account.setBalance(userCurrentBalance);
-
-                            userService.userAccountOperations(
-                                    new AccountOperation
-                                            (
-                                                    Date.from(Instant.now()),
-                                                    accountOperationsDto.getAmountWithdrawed(),
-                                                    OperationType.DEBIT,
-                                                    account
-                                            )
-                            );
-
-                            userService.addNewBankAccount(account);
-
-                            return ResponseEntity
-                                    .ok()
-                                    .body(
-                                            exceptionHandler.successfuOperations
-                                                    (
-                                                            new OperationExecption
-                                                                    (
-                                                                            Date.from(Instant.now()),
-                                                                            accountOperationsDto.getAmountWithdrawed(),
-                                                                            userCurrentBalance,
-                                                                            "Withdrawal"
-                                                                    )
-                                                    )
-                                    );
-                        }else {
-                            return ResponseEntity
-                                    .ok()
-                                    .body(
-                                            exceptionHandler.limitExecption(
-                                                    (
-                                                            new LimitExecption(
-                                                                  Date.from(Instant.now()),
-                                                                    card.getLimitForDay(),
-                                                                    card.getLimitForYear(),
-                                                                    "Withdrawal",
-                                                                    card.getCardType()
-                                                            )
-                                                    )
-                                            )
-                                    );
-                        }
-                    }
-
-
-                }
-            }
-
-
-        }
-
-        return ResponseEntity
-                .badRequest()
-                .body(
-                        exceptionHandler.AccountExceptions
-                                (
-                                        new Execptions
-                                                (
-                                                        Date.from(Instant.now()),
-                                                        400,
-                                                        "Error",
-                                                        "insufficient balance"
-                                                )
-                                )
-                );
-
+        return userOperationsService.withdraw(accountOperationsDto);
     }
+
+
+    @PostMapping("/transferMoney")
+    @PreAuthorize("hasAuthority('AGENT')")
+    public ResponseEntity<?> transferMoney(@RequestBody AccountOperationsDto accountOperationsDto) {
+        return userOperationsService.transferMoney(accountOperationsDto);
+    }
+
+    @PostMapping("/payFactures")
+    @PreAuthorize("hasAuthority('AGENT')")
+    public ResponseEntity<?> payFactures(@RequestBody OnlinePaymentsDto onlinePaymentsDto) {
+        return userOperationsService.payments(onlinePaymentsDto);
+    }
+
+
 
 }

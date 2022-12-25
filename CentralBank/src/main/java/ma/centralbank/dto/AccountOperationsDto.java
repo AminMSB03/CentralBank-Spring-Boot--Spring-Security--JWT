@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AccountOperationsDto {
     private int amountWithdrawed;
-
+    private double moneyToTransfer;
+    private Long accountNumber;
     private String email;
 }

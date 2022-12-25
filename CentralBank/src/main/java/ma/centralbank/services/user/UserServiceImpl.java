@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByEmail(email);
     }
 
+
     @Override
     public List<User> listUsers() {
         return this.userRepository.findAll();
@@ -55,19 +56,15 @@ public class UserServiceImpl implements UserService{
         return bankAccountRepository.findAll();
     }
 
-    @Override
-    public AccountOperation userAccountOperations(AccountOperation accountOperation) {
-        return operationsRepository.save(accountOperation);
-    }
-
-    @Override
-    public List<CardLimit> getCardLimits() {
-        return cardRepository.findAll();
-    }
 
     @Override
     public CardLimit AddNewCardLimits(CardLimit cardLimit) {
         return cardRepository.save(cardLimit);
+    }
+
+    @Override
+    public User getAccountPhoneNumberByPhoneNumber(Long phoneNumber) {
+        return userRepository.findAccountPhoneNumberByPhoneNumber(phoneNumber);
     }
 
 

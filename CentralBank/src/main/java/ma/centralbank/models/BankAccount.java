@@ -9,6 +9,7 @@ import ma.centralbank.enums.AccountStatus;
 import ma.centralbank.enums.CardType;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
@@ -30,6 +31,10 @@ public class BankAccount {
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
     private User customer;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private OnlinePayments payments;
+
 
 
 }

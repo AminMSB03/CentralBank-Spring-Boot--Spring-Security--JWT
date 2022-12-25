@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity(name = "_user")
-@Table(name="_user")
-@Data @NoArgsConstructor @AllArgsConstructor
+@Table(name = "_user")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +24,12 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
     private Long phoneNumber;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role;
-    @OneToMany(mappedBy = "customer",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private List<BankAccount> bankAccounts;
 
 }

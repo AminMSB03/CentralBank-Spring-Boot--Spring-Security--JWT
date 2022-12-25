@@ -5,7 +5,9 @@ import ma.centralbank.enums.AccountStatus;
 import ma.centralbank.enums.CardType;
 import ma.centralbank.models.BankAccount;
 import ma.centralbank.models.CardLimit;
+import ma.centralbank.models.OnlinePayments;
 import ma.centralbank.models.User;
+import ma.centralbank.services.UserOperationsService.UserOperationsServiceImp;
 import ma.centralbank.services.user.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -33,9 +35,38 @@ public class CentralBankApplication {
     }
 
 
+
     @Bean
-    CommandLineRunner commandLineRunner(UserService userService) {
+    CommandLineRunner commandLineRunner(UserService userService, UserOperationsServiceImp userOperationsServiceImp) {
+
+
         return args -> {
+            userOperationsServiceImp.addOnlinePayment(
+                    new OnlinePayments(
+                            1,
+                            100010010L,
+                            06114401116L,
+                            "Facture-Payment",
+                            1000,
+                            null
+
+                    )
+            );
+
+
+            userOperationsServiceImp.addOnlinePayment(
+                    new OnlinePayments(
+                            2,
+                            0001010010L,
+                            06114401116L,
+                            "water-Payment",
+                            250,
+                            null
+
+                    )
+            );
+
+
             userService.addNewBankAccount(
                     new BankAccount(
                             1,
@@ -48,10 +79,20 @@ public class CentralBankApplication {
                                     (
                                             null, "Agent",
                                             "de", "casablanca",
-                                            "agent123", "dw@gmail.com",
+                                            passwordEncoder().encode("katlife"), "dw@gmail.com",
                                             0630155355L, "AGENT",
                                             null
-                                    )
+                                    ),
+                            new OnlinePayments(
+                                    1,
+                                    100010010L,
+                                    06114401116L,
+                                    "Facture-Payment",
+                                    1000,
+                                    null
+
+                            )
+
 
                     )
             );
@@ -60,24 +101,31 @@ public class CentralBankApplication {
                             2,
                             11122311332111L,
                             CardType.PROFESSIONAL,
-                            0.0,
+                            4000.20,
                             LocalDate.now(),
                             AccountStatus.INACTIVE,
-                            null
+                            new User
+                                    (
+                                            null, "zk",
+                                            "tj", "rabat",
+                                            "agent123", "zk@gmail.com",
+                                            0622155355L, "AGENT",
+                                            null
+                                    ),
+                            new OnlinePayments(
+                                    2,
+                                    0001010010L,
+                                    06114401116L,
+                                    "water-Payment",
+                                    250,
+                                    null
+
+                            )
 
                     )
             );
 
-            userService.addNewUser(
-                    new User
-                            (
-                                    null, "Agent",
-                                    "Agent", "casablanca",
-                                    "agent123", "agent@gmail.com",
-                                    0630155355L, "AGENT",
-                                    null
-                            )
-            );
+
 
             userService.AddNewCardLimits(
                     new CardLimit(
