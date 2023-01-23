@@ -1,6 +1,7 @@
 package ma.centralbank.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import ma.centralbank.enums.AccountStatus;
@@ -22,6 +23,7 @@ public class BankAccount {
     private AccountStatus status;
 
     @OneToOne(fetch = FetchType.EAGER)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private User customer;
 
 }

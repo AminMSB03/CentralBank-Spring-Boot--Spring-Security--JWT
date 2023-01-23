@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 public class ClientController {
@@ -27,9 +28,9 @@ public class ClientController {
     }
 
 
-    public ResponseEntity<Response> makeTransaction(@RequestBody Transaction transaction){
+    public ResponseEntity<Response> makeTransaction(@RequestBody Transaction transaction, Principal principal){
 
-        Boolean res = this.clientService.makeTransaction(transaction.getIdSenderBankAccount(), transaction.getIdReceiverBankAccount(), transaction.getAmount());
+        Boolean res = this.clientService.makeTransaction(principal.getName(), transaction.getIdReceiverBankAccount(), transaction.getAmount());
         if(res){
             return new ResponseEntity<>(Response.builder().error("No error is there").value("Votre transaction a été bien réalisée").build(),HttpStatusCode.valueOf(200));
         }else{

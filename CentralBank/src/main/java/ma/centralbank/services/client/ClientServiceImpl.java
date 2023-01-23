@@ -1,5 +1,6 @@
 package ma.centralbank.services.client;
 
+import ma.centralbank.dto.AccountOperationResponseDto;
 import ma.centralbank.dto.BankAccountDto;
 import ma.centralbank.dto.CinDto;
 import ma.centralbank.dto.UserDto;
@@ -24,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -94,15 +97,16 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    public boolean makeTransaction(Long idSenderBankAccount, Long idReceiverBankAccount, double amount) {
-        Optional<BankAccount> sender = this.bankAccountRepository.findById(idSenderBankAccount);
-        Optional<BankAccount> receiver = this.bankAccountRepository.findById(idReceiverBankAccount);
+    public boolean makeTransaction(String emailSenderBankAccount, Long idReceiverBankAccount, double amount) {
+        User user = this.userRepository.findByEmail(emailSenderBankAccount);
+        Optional<BankAccount> sender = Optional.ofNullable(this.bankAccountRepository.findByUser_Id(user.getId()));
+        BankAccount receiver = this.bankAccountRepository.findByUser_Id(idReceiverBankAccount);
 
-        if(sender.isPresent() && receiver.isPresent()){
+        if(sender.isPresent() && receiver!=null){
              this.accountOperationRepository.save(AccountOperation.builder()
                     .amount(amount)
                     .operationDate(LocalDate.from(LocalDateTime.now()))
-                    .bankAccount(receiver.get())
+                    .bankAccount(receiver)
                      .secondBankAccount(sender.get())
                     .type(OperationType.DEBIT)
                     .build());
@@ -110,7 +114,7 @@ public class ClientServiceImpl implements ClientService{
             this.accountOperationRepository.save(AccountOperation.builder()
                     .amount(amount)
                     .operationDate(LocalDate.from(LocalDateTime.now()))
-                    .secondBankAccount(receiver.get())
+                    .secondBankAccount(receiver)
                     .bankAccount(sender.get())
                     .type(OperationType.CREDIT)
                     .build());
@@ -128,8 +132,10 @@ public class ClientServiceImpl implements ClientService{
             this.accountOperationRepository.save(AccountOperation.builder()
                     .bankAccount(bankAccount.get())
                     .amount(amount)
+                    .type(OperationType.DEBIT)
                     .operationDate(LocalDate.from(LocalDateTime.now()))
                     .build());
+            bankAccount.get().setBalance(amount);
             return true;
         }
 
@@ -156,6 +162,21 @@ public class ClientServiceImpl implements ClientService{
         bankAccountDto.getUserDto().setCinDto(cinDto);
         return bankAccountDto;
 
+    }
+
+    @Override
+    public List<AccountOperationResponseDto> getClientOperations(String email) {
+        User user = this.userRepository.findByEmail(email);
+        BankAccount bankAccount = this.bankAccountRepository.findByUser_Id(user.getId());
+        List<AccountOperation> byBankAccount = this.accountOperationRepository.findByBankAccount(bankAccount);
+
+        List<AccountOperationResponseDto> dtos = new ArrayList<AccountOperationResponseDto>();
+        byBankAccount.forEach(el->{
+            AccountOperationResponseDto map = this.modelMapper.map(el, AccountOperationResponseDto.class);
+            dtos.add(map);
+        });
+
+        return dtos;
     }
 
 

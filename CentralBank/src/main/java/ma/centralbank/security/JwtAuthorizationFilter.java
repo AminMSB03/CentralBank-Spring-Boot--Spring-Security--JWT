@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -42,8 +43,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
 
             }catch (Exception e){
-                response.setHeader("error-message",e.getMessage());
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                //response.getWriter().write(Map.of("message",e.getMessage()).toString());
+                response.setHeader("",e.getMessage());
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             }
         }else{
             filterChain.doFilter(request,response);

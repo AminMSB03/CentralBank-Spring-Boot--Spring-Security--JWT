@@ -18,6 +18,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String address;
+    private String image;
     @Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;

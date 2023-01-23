@@ -1,5 +1,6 @@
 package ma.centralbank.services.client;
 
+import ma.centralbank.dto.AccountOperationResponseDto;
 import ma.centralbank.dto.BankAccountDto;
 import ma.centralbank.reqObjects.RegisterForm;
 import ma.centralbank.models.BankAccount;
@@ -8,6 +9,7 @@ import ma.centralbank.models.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface ClientService {
 
@@ -18,12 +20,14 @@ public interface ClientService {
 
     void register(RegisterForm registerForm) throws IOException;
 
-    boolean makeTransaction(Long idSenderBankAccount, Long idReceiverBankAccount, double amount);
+    boolean makeTransaction(String emailSenderBankAccount, Long idReceiverBankAccount, double amount);
 
     boolean makeTransfer(Long idBankAccount, double amount);
 
     User getUserByEmail(String email);
 
     BankAccountDto getBankAccount(String email);
+
+    List<AccountOperationResponseDto> getClientOperations(String email);
 
 }

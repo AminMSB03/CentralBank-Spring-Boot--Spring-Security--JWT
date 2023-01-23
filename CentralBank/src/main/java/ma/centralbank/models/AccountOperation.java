@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import ma.centralbank.enums.OperationType;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity @Builder
 @Data @NoArgsConstructor @AllArgsConstructor
